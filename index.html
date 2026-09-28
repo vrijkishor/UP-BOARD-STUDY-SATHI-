@@ -1,121 +1,16 @@
-<!doctype html>
-<html lang="hi">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta name="theme-color" content="#2563eb">
-<title>UP BOARD STUDY SATHI</title>
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}
-header{background:linear-gradient(135deg,#164e63,#2563eb);color:#fff;padding:18px 16px 22px;position:sticky;top:0;z-index:5}
-.logo{font-size:22px;font-weight:800}.tag{font-size:13px;opacity:.9;margin-top:4px}
-.container{max-width:900px;margin:auto;padding:16px}.search{width:100%;padding:13px 15px;border:0;border-radius:14px;margin-top:14px;font-size:15px}
-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e5e7eb;display:flex;justify-content:space-around;padding:8px 4px;z-index:10}
-nav button{background:none!important;color:#475569!important;padding:6px 5px;margin:0;font-size:12px}.navico{display:block;font-size:20px}
-main{padding-bottom:78px}.hidden{display:none!important}
-h2{font-size:21px;margin:20px 0 12px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.card,.lesson,.panel{background:#fff;border-radius:18px;padding:16px;box-shadow:0 4px 18px #0000000b;margin-bottom:12px}
-.card{cursor:pointer}.card b{font-size:18px}.muted{color:#6b7280;font-size:13px}
-button.primary,button.action{border:0;border-radius:12px;padding:11px 14px;background:#2563eb;color:#fff;font-weight:700;margin-top:10px}
-button.secondary{border:1px solid #dbe3ee;border-radius:12px;padding:10px 14px;background:#fff;color:#1e3a8a;font-weight:700}
-.back{background:#334155!important}.pill{display:inline-block;background:#eef2ff;color:#3730a3;border-radius:99px;padding:5px 9px;font-size:12px;margin:3px}
-.progress{height:9px;background:#e5e7eb;border-radius:99px;overflow:hidden}.bar{height:100%;background:#2563eb;width:0}
-.option{display:block;width:100%;text-align:left;border:1px solid #dbe3ee;background:#fff;padding:12px;border-radius:12px;margin:8px 0}
-.option.correct{border-color:#16a34a;background:#f0fdf4}.option.wrong{border-color:#dc2626;background:#fef2f2}
-textarea,input[type=text]{width:100%;padding:12px;border:1px solid #dbe3ee;border-radius:12px;font:inherit}
-.video{background:#0f172a;color:#fff;border-radius:18px;padding:35px 18px;text-align:center;margin-bottom:12px}
-.video .play{font-size:52px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:#fff;border-radius:15px;padding:13px;text-align:center}.stat b{font-size:20px}
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#172033;color:#fff;padding:11px 15px;border-radius:12px;display:none;z-index:20}
-.small{font-size:12px}
-</style>
-</head>
-<body>
-<header>
-<div class="container">
-<div class="logo">📚 UP BOARD STUDY SATHI</div>
-<div class="tag">Class 9–12 • Chapter-wise AI Learning</div>
-<input id="search" class="search" placeholder="🔎 विषय या chapter खोजें..." oninput="doSearch(this.value)">
-</div>
-</header>
-
-<main class="container">
-<section id="home">
-<h2>अपनी कक्षा चुनें</h2>
-<div class="grid" id="classes"></div>
-<h2>मुख्य सुविधाएँ</h2>
-<div class="grid">
-<div class="card"><b>🎥 AI Lesson</b><div class="muted">Lesson script + voice पढ़कर सुनाना</div></div>
-<div class="card"><b>🤖 AI Doubt</b><div class="muted">सवाल लिखकर explanation पाएँ</div></div>
-<div class="card"><b>📝 MCQ Test</b><div class="muted">Chapter-wise practice</div></div>
-<div class="card"><b>📊 Progress</b><div class="muted">Score और completed lessons</div></div>
-</div>
-<div class="panel"><b>⚡ आज का लक्ष्य</b><p class="muted">एक lesson पूरा करें और 5 MCQ हल करें।</p><div class="progress"><div class="bar" id="homebar"></div></div></div>
-</section>
-
-<section id="classesPage" class="hidden"></section>
-<section id="subjectsPage" class="hidden"></section>
-<section id="chapterPage" class="hidden"></section>
-<section id="lessonPage" class="hidden"></section>
-<section id="quizPage" class="hidden"></section>
-<section id="doubtPage" class="hidden"></section>
-<section id="progressPage" class="hidden"></section>
-<section id="profilePage" class="hidden"></section>
-</main>
-
-<nav>
-<button onclick="show('home')"><span class="navico">🏠</span>Home</button>
-<button onclick="showClasses()"><span class="navico">📚</span>Classes</button>
-<button onclick="showDoubt()"><span class="navico">🤖</span>AI Doubt</button>
-<button onclick="showProgress()"><span class="navico">📊</span>Progress</button>
-<button onclick="showProfile()"><span class="navico">👤</span>Profile</button>
-</nav>
-<div id="toast" class="toast"></div>
-
-<script>
-const subjects={
-9:["हिंदी","अंग्रेज़ी","गणित","विज्ञान","सामाजिक विज्ञान"],
-10:["हिंदी","अंग्रेज़ी","गणित","विज्ञान","सामाजिक विज्ञान"],
-11:["हिंदी","अंग्रेज़ी","भौतिक विज्ञान","रसायन विज्ञान","गणित","जीव विज्ञान"],
-12:["हिंदी","अंग्रेज़ी","भौतिक विज्ञान","रसायन विज्ञान","गणित","जीव विज्ञान"]
-};
-const chapters=["Chapter 1","Chapter 2","Chapter 3","Chapter 4","Chapter 5","Chapter 6"];
-const lessons={
-"गणित|Chapter 1":["संख्याएँ और मूल अवधारणाएँ","संख्या पद्धति को समझना आसान तरीके से। उदाहरणों के साथ मुख्य नियम और अभ्यास।"],
-"विज्ञान|Chapter 1":["पदार्थ का परिचय","पदार्थ की अवस्थाएँ, गुण और रोज़मर्रा के उदाहरण।"],
-"रसायन विज्ञान|Chapter 1":["रसायन विज्ञान की मूल अवधारणाएँ","परमाणु, अणु, मोल और रासायनिक गणना की शुरुआत।"],
-"भौतिक विज्ञान|Chapter 1":["इकाइयाँ और मापन","भौतिक राशियाँ, SI units और मापन की मूल बातें।"]
-};
-const qs=[
-["2 + 3 × 4 = ?",["20","14","24","9"],1],
-["पानी का रासायनिक सूत्र क्या है?",["CO2","O2","H2O","NaCl"],2],
-["SI में लंबाई की इकाई?",["मीटर","लीटर","किलोग्राम","सेकंड"],0],
-["पृथ्वी का प्राकृतिक उपग्रह?",["मंगल","चंद्रमा","सूर्य","शुक्र"],1],
-["10 का 20% कितना है?",["1","2","5","20"],1]
-];
-let currentClass=9,currentSubject="",currentChapter="",quizScore=0,quizIndex=0;
-let progress=JSON.parse(localStorage.getItem("ubs_progress")||"{}");
-function save(){localStorage.setItem("ubs_progress",JSON.stringify(progress));updateBar()}
-function toast(t){let x=document.getElementById("toast");x.textContent=t;x.style.display="block";setTimeout(()=>x.style.display="none",1800)}
-function hideAll(){document.querySelectorAll("main section").forEach(x=>x.classList.add("hidden"))}
-function show(id){hideAll();document.getElementById(id).classList.remove("hidden");window.scrollTo(0,0);updateBar()}
-function updateBar(){let n=Object.values(progress).filter(Boolean).length;let p=Math.min(100,n*5);let b=document.getElementById("homebar");if(b)b.style.width=p+"%"}
-function init(){document.getElementById("classes").innerHTML=[9,10,11,12].map(c=>`<div class="card" onclick="showSubjects(${c})"><b>📘 Class ${c}</b><div class="muted">UP Board</div></div>`).join("");updateBar()}
-function showClasses(){hideAll();let x=document.getElementById("classesPage");x.classList.remove("hidden");x.innerHTML="<h2>कक्षा चुनें</h2><div class='grid'>"+[9,10,11,12].map(c=>`<div class='card' onclick='showSubjects(${c})'><b>Class ${c}</b><div class='muted'>UP Board syllabus</div></div>`).join("")+"</div>"}
-function showSubjects(c){currentClass=c;hideAll();let x=document.getElementById("subjectsPage");x.classList.remove("hidden");x.innerHTML=`<button class="primary back" onclick="showClasses()">← वापस</button><h2>Class ${c} • Subjects</h2><div class="grid">${subjects[c].map(s=>`<div class="card" onclick='showChapters(${c},${JSON.stringify(s)})'><b>📖 ${s}</b><div class="muted">Chapter-wise learning</div></div>`).join("")}</div>`}
-function showChapters(c,s){currentClass=c;currentSubject=s;hideAll();let x=document.getElementById("chapterPage");x.classList.remove("hidden");x.innerHTML=`<button class="primary back" onclick="showSubjects(${c})">← Subjects</button><h2>${s}</h2><div>${chapters.map((ch,i)=>{let key=c+"|"+s+"|"+ch;let done=progress[key];return `<div class="lesson"><span class="pill">Chapter ${i+1}</span><b>${ch}</b><p class="muted">🎥 AI Lesson • 📝 MCQ • 🤖 Doubt</p><div>${done?"✅ Completed":"Not started"}</div><button class="action" onclick='showLesson(${c},${JSON.stringify(s)},${JSON.stringify(ch)})'>Start Lesson</button></div>`}).join("")}</div>`}
-function getLesson(s,ch){return lessons[s+"|"+ch]||[s+" — "+ch+" की मूल बातें","यह lesson AI-style explanation के लिए तैयार है। विषय की परिभाषा, मुख्य बिंदु, उदाहरण और अभ्यास प्रश्न यहाँ पढ़ें।"]}
-function showLesson(c,s,ch){currentClass=c;currentSubject=s;currentChapter=ch;hideAll();let x=document.getElementById("lessonPage");x.classList.remove("hidden");let L=getLesson(s,ch);x.innerHTML=`<button class="primary back" onclick="showChapters(${c},${JSON.stringify(s)})">← Chapters</button><h2>${L[0]}</h2><div class="video"><div class="play">▶️</div><b>AI Video Lesson</b><p class="small">नीचे Play दबाकर browser की AI voice से lesson सुन सकते हैं।</p><button class="secondary" onclick='speak(${JSON.stringify(L[1])})'>🔊 Play Voice</button></div><div class="panel"><h3>📚 Explanation</h3><p>${L[1]}</p><p>मुख्य बिंदु: परिभाषा समझें, उदाहरण देखें और अंत में MCQ से अपनी तैयारी जाँचें।</p></div><button class="action" onclick="completeLesson()">✅ Lesson Complete</button><button class="action" onclick="startQuiz()">📝 Chapter MCQ Test</button>`}
-function speak(t){if(!("speechSynthesis" in window)){toast("इस browser में voice उपलब्ध नहीं है");return}speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang="hi-IN";u.rate=.9;speechSynthesis.speak(u)}
-function completeLesson(){progress[currentClass+"|"+currentSubject+"|"+currentChapter]=true;save();toast("Lesson completed ✅")}
-function startQuiz(){quizIndex=0;quizScore=0;renderQuiz()}
-function renderQuiz(){hideAll();let x=document.getElementById("quizPage");x.classList.remove("hidden");if(quizIndex>=qs.length){x.innerHTML=`<div class="panel"><h2>🎉 Test पूरा!</h2><h3>Score: ${quizScore}/${qs.length}</h3><p class="muted">आपका score local device पर रखा गया है।</p><button class="action" onclick="showChapters(${currentClass},${JSON.stringify(currentSubject)})">Back to Chapters</button></div>`;return}let q=qs[quizIndex];x.innerHTML=`<h2>📝 MCQ ${quizIndex+1}/${qs.length}</h2><div class="panel"><b>${q[0]}</b>${q[1].map((o,i)=>`<button class="option" onclick="answer(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join("")}</div>`}
-function answer(i){let q=qs[quizIndex];if(i===q[2]){quizScore++;toast("सही उत्तर ✅")}else toast("अगली बार बेहतर 👍");quizIndex++;setTimeout(renderQuiz,450)}
-function showDoubt(){hideAll();let x=document.getElementById("doubtPage");x.classList.remove("hidden");x.innerHTML=`<h2>🤖 AI Doubt Solver</h2><div class="panel"><p class="muted">अपना सवाल लिखें। यह prototype common study questions के लिए तुरंत explanation देता है।</p><textarea id="dq" rows="4" placeholder="जैसे: प्रकाश संश्लेषण क्या है?"></textarea><button class="action" onclick="askDoubt()">Ask AI</button></div><div id="answer"></div>`}
-function askDoubt(){let q=document.getElementById("dq").value.trim();if(!q)return toast("पहले सवाल लिखें");let a="इस सवाल को आसान भाषा में समझें: पहले परिभाषा लिखें, फिर मुख्य नियम/कारण और एक उदाहरण दें। अगर यह गणित का सवाल है तो दिए गए मान लिखकर formula लगाएँ।";let low=q.toLowerCase();if(low.includes("photosynthesis")||q.includes("प्रकाश संश्लेषण"))a="प्रकाश संश्लेषण वह प्रक्रिया है जिसमें हरे पौधे सूर्य के प्रकाश की सहायता से जल और कार्बन डाइऑक्साइड से भोजन बनाते हैं और ऑक्सीजन छोड़ते हैं।";if(q.includes("2+2"))a="2 + 2 = 4.";document.getElementById("answer").innerHTML=`<div class="panel"><b>🤖 AI Explanation</b><p>${a}</p><small class="muted">नोट: यह offline prototype है; real cloud AI जोड़ने पर इससे कहीं अधिक सवालों के उत्तर दिए जा सकते हैं।</small></div>`}
-function showProgress(){hideAll();let x=document.getElementById("progressPage");x.classList.remove("hidden");let n=Object.values(progress).filter(Boolean).length;x.innerHTML=`<h2>📊 आपका Progress</h2><div class="stats"><div class="stat"><b>${n}</b><div class="muted">Lessons</div></div><div class="stat"><b>5</b><div class="muted">Demo MCQ</div></div><div class="stat"><b>${Math.min(100,n*5)}%</b><div class="muted">Progress</div></div></div><div class="panel"><h3>Overall Progress</h3><div class="progress"><div class="bar" style="width:${Math.min(100,n*5)}%"></div></div></div>`}
-function showProfile(){hideAll();let x=document.getElementById("profilePage");x.classList.remove("hidden");x.innerHTML=`<h2>👤 Student Profile</h2><div class="panel"><label>नाम</label><input id="name" type="text" value="${localStorage.getItem("ubs_name")||""}" placeholder="अपना नाम लिखें"><button class="action" onclick="localStorage.setItem('ubs_name',document.getElementById('name').value);toast('Profile saved ✅')">Save</button></div><div class="panel"><b>UP BOARD STUDY SATHI</b><p class="muted">Class 9–12 learning platform prototype</p></div>`}
-function doSearch(q){q=q.toLowerCase().trim();if(!q)return;let hits=[];for(let c of [9,10,11,12])for(let s of subjects[c])if(s.toLowerCase().includes(q)||s.includes(q))hits.push([c,s]);if(hits.length){showClasses();document.getElementById("classesPage").innerHTML="<h2>Search Results</h2>"+hits.map(h=>`<div class='card' onclick='showChapters(${h[0]},${JSON.stringify(h[1])})'><b>Class ${h[0]} • ${h[1]}</b></div>`).join("")}}
-init();
-</script>
-</body>
-</html>
+<!doctype html><html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#2563eb"><link rel="manifest" href="manifest.json"><title>UP BOARD STUDY SATHI</title><style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}header{background:#2563eb;color:#fff;padding:18px}main{max-width:850px;margin:auto;padding:15px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}.card,.box{background:#fff;border-radius:15px;padding:15px;margin-bottom:12px;box-shadow:0 2px 10px #0001}.card{cursor:pointer}button{border:0;border-radius:10px;padding:10px 14px;background:#2563eb;color:#fff;font-weight:bold;margin:4px}.secondary{background:#e7eefc;color:#17439a}.muted{color:#667085;font-size:13px}input,textarea{width:100%;padding:11px;border:1px solid #ccd4e0;border-radius:10px;margin:7px 0}.option{display:block;background:#eef3ff;padding:10px;border-radius:9px;margin:7px 0}.progress{height:10px;background:#ddd;border-radius:8px}.bar{height:100%;background:#2563eb;border-radius:8px}</style></head><body>
+<header><h1>📚 UP BOARD STUDY SATHI</h1><small>कक्षा 9–12 • Notes • MCQ • Doubt Solver</small></header><main id="app"></main><script>
+const subjects={9:["Hindi","English","Mathematics","Science","Social Science"],10:["Hindi","English","Mathematics","Science","Social Science"],11:["Hindi","English","Physics","Chemistry","Mathematics","Biology"],12:["Hindi","English","Physics","Chemistry","Mathematics","Biology"]};
+let st=JSON.parse(localStorage.getItem("studySathi")||'{"lessons":0,"tests":0}');function save(){localStorage.setItem("studySathi",JSON.stringify(st))}
+function home(){app.innerHTML='<div class="box"><h2>नमस्ते 👋</h2><p>अपनी कक्षा चुनें:</p><div class="grid">'+[9,10,11,12].map(c=>`<div class="card" onclick="subs(${c})"><h3>कक्षा ${c}</h3><p class="muted">Subjects & Chapters</p></div>`).join("")+'</div></div><div class="box"><h3>📊 Progress</h3><p>'+st.lessons+' lessons • '+st.tests+' tests</p><div class="progress"><div class="bar" style="width:'+Math.min(100,st.lessons*10)+'%"></div></div></div><div class="box"><h3>🤖 Doubt Solver</h3><button onclick="doubt()">खोलें</button></div>'}
+function subs(c){app.innerHTML=`<button class="secondary" onclick="home()">← Home</button><div class="box"><h2>कक्षा ${c}</h2><div class="grid">${subjects[c].map(s=>`<div class="card" onclick="chap(${c},'${s}')"><h3>${s}</h3><p class="muted">Chapters</p></div>`).join("")}</div></div>`}
+function chap(c,s){let a=["अध्याय 1","अध्याय 2","अध्याय 3","अध्याय 4","अध्याय 5","अध्याय 6"];app.innerHTML=`<button class="secondary" onclick="subs(${c})">← Subjects</button><div class="box"><h2>${s}</h2>${a.map(x=>`<div class="card"><h3>📖 ${x}</h3><button onclick="lesson(${c},'${s}','${x}')">Notes पढ़ें</button><button class="secondary" onclick="test('${s}','${x}')">MCQ</button></div>`).join("")}</div>`}
+function lesson(c,s,x){app.innerHTML=`<button class="secondary" onclick="chap(${c},'${s}')">← Chapters</button><div class="box"><h2>${s} — ${x}</h2><h3>सरल Explanation</h3><p>इस अध्याय की मुख्य अवधारणाएँ समझें, महत्वपूर्ण शब्द याद करें और अभ्यास प्रश्न हल करें।</p><ul><li>मुख्य अवधारणा समझें</li><li>उदाहरण देखें</li><li>MCQ से अभ्यास करें</li></ul><button onclick="done()">✅ Lesson पूरा</button><button class="secondary" onclick="test('${s}','${x}')">MCQ Test</button></div>`}
+function done(){st.lessons++;save();alert("Progress में जुड़ गया ✅");home()}
+function test(s,x){let q=[["मुख्य अवधारणा समझने का सही तरीका?",["समझकर पढ़ना","सिर्फ अनुमान","पढ़ाई छोड़ना"],0],["अच्छी तैयारी के लिए?",["नियमित अभ्यास","कुछ नहीं","सिर्फ उत्तर याद करना"],0]];app.innerHTML='<button class="secondary" onclick="home()">← Home</button><div class="box"><h2>📝 MCQ Test</h2>'+q.map((z,i)=>`<div class="card"><b>${i+1}. ${z[0]}</b>${z[1].map((o,j)=>`<label class="option"><input type="radio" name="q${i}" value="${j}"> ${o}</label>`).join("")}</div>`).join("")+'<button onclick="check()">Submit</button><p id="r"></p></div>'}
+function check(){let score=0;document.querySelectorAll('input[type=radio]:checked').forEach(e=>{if(e.value==="0")score++});st.tests++;save();r.innerHTML='<b>स्कोर: '+score+'/2</b>'}
+function doubt(){app.innerHTML='<button class="secondary" onclick="home()">← Home</button><div class="box"><h2>🤖 Doubt Solver</h2><textarea id="q" rows="5" placeholder="अपना सवाल लिखें..."></textarea><button onclick="solve()">समझाएँ</button><div id="ans"></div></div>'}
+function solve(){ans.innerHTML=q.value.trim()?'<div class="box"><b>Study तरीका:</b><p>सवाल के मुख्य शब्द पहचानें, परिभाषा समझें, उदाहरण देखें और फिर अभ्यास करें।</p><small>यह offline demo है; असली AI जवाब के लिए online AI service/backend जोड़ना होगा।</small></div>':'<p>पहले सवाल लिखें।</p>'}
+home();
+</script></main></body></html>
